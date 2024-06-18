@@ -55,7 +55,15 @@ switch (command) {
         if (args[1] === "--name-only") {
             const sha = args[2];
             const treeObject = getShaContent(sha);
-            console.log(treeObject);
+            const output: string[] = [];
+            const entries = treeObject.split('\0');
+            for(let i = 1; i<entries.length; i++) {
+                const splitEntries = entries[i].split(' ');
+                if(splitEntries.length > 1)
+                    output.push(splitEntries[splitEntries.length - 1]);
+            }
+            const outputString = output.join('\n');
+            console.log(outputString);
         }
         break;
     default:
