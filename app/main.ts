@@ -5,10 +5,18 @@ import crypto from "crypto";
 const args = process.argv.slice(2);
 const command = args[0];
 
+const getShaContent = (sha: string) => {
+    const filePath = `.git/objects/${sha.substring(0, 2)}/${sha.substring(2)}`;
+    const data = fs.readFileSync(filePath);
+    const decompressed = zlib.unzipSync(data);
+    return decompressed.toString('utf8');
+}
+
 enum Commands {
     Init = "init",
     CatFile = "cat-file",
-    HashObject = "hash-object"
+    HashObject = "hash-object",
+    LsTree = "ls-tree"
 }
 
 switch (command) {
@@ -24,10 +32,7 @@ switch (command) {
     case Commands.CatFile:
         if (args[1] === "-p") {
             const blobHash = args[2];
-            const filePath = `.git/objects/${blobHash.substring(0, 2)}/${blobHash.substring(2)}`;
-            const data = fs.readFileSync(filePath);
-            const decompressed = zlib.unzipSync(data);
-            const stringData = decompressed.toString('utf8');
+            const stringData = getShaContent(blobHash);
             const content = stringData.split('\0')[1];
             process.stdout.write(content);
         }
@@ -45,7 +50,13 @@ switch (command) {
             fs.writeFileSync(`./.git/objects/${dirName}/${blobObjectFile}`, compressedContent);
             console.log(hash);
         }
-
+        break;
+    case Commands.LsTree:
+        if (args[1] === "--name-only") {
+            const sha = args[2];
+            const treeObject = getShaContent(sha);
+            console.log(treeObject);
+        }
         break;
     default:
         throw new Error(`Unknown command ${command}`);
