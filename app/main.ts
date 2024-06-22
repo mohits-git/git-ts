@@ -65,40 +65,40 @@ switch (command) {
     console.log(treeObject);
     console.log('---------------------------')
     const output: string[] = [];
-    const entries = treeObject.split('\0');
+    const entries = treeObject.split(' ');
     console.log(entries);
     console.log('---------------------------')
     if (args[1] === "--name-only") {
-      for (let i = 1; i < entries.length; i++) {
-        const splitEntries = entries[i].split(' ');
-        if (splitEntries.length > 1)
-          output.push(splitEntries[splitEntries.length - 1]);
+      for (let i = 2; i < entries.length; i++) {
+        const nullIndex = entries[i].indexOf('\0');
+        const fileName = entries[i].substring(0, nullIndex);
+        output.push(fileName);
       }
     }
-    else {
-      for (let i = 1; i < entries.length; i++) {
-        const line = [];
-        const splitEntries = entries[i].split(' ');
-        if (splitEntries.length > 1) {
-          const mode = splitEntries[0].substring(splitEntries[0].length - 6);
-          let modeLength = 6;
-          if (mode.endsWith("40000")) {
-            line.push("40000");
-            line.push("tree");
-            modeLength = 5;
-          }
-          else {
-            line.push(mode);
-            line.push("blob");
-          }
-          const sha = getShaFromNext(entries, i);
-          const buf = Buffer.from(sha, 'latin1');
-          const hex = buf.toString('hex');
-          line.push(hex);
-          output.push(`${line.join(' ')}\t${splitEntries[splitEntries.length - 1]}`);
-        }
-      }
-    }
+    // else {
+    //   for (let i = 1; i < entries.length; i++) {
+    //     const line = [];
+    //     const splitEntries = entries[i].split(' ');
+    //     if (splitEntries.length > 1) {
+    //       const mode = splitEntries[0].substring(splitEntries[0].length - 6);
+    //       let modeLength = 6;
+    //       if (mode.endsWith("40000")) {
+    //         line.push("40000");
+    //         line.push("tree");
+    //         modeLength = 5;
+    //       }
+    //       else {
+    //         line.push(mode);
+    //         line.push("blob");
+    //       }
+    //       const sha = getShaFromNext(entries, i);
+    //       const buf = Buffer.from(sha, 'latin1');
+    //       const hex = buf.toString('hex');
+    //       line.push(hex);
+    //       output.push(`${line.join(' ')}\t${splitEntries[splitEntries.length - 1]}`);
+    //     }
+    //   }
+    // }
     const outputString = output.join('\n');
     console.log(outputString);
     break;
