@@ -1,7 +1,7 @@
 import * as fs from "fs";
 import zlib from 'node:zlib';
 import crypto from "crypto";
-import { Commands } from "./types";
+import { Commands, Modes, Objects } from "./types";
 
 const args = process.argv.slice(2);
 const command = args[0];
@@ -9,8 +9,7 @@ const command = args[0];
 const getShaContent = (sha: string) => {
   const filePath = `.git/objects/${sha.substring(0, 2)}/${sha.substring(2)}`;
   const data = fs.readFileSync(filePath);
-  const decompressed = zlib.unzipSync(data);
-  return decompressed.toString('utf8');
+  return zlib.unzipSync(data);
 }
 
 const getShaFromNext = (entries: string[], i: number): string => {
@@ -40,7 +39,7 @@ switch (command) {
   case Commands.CatFile:
     if (args[1] === "-p") {
       const blobHash = args[2];
-      const stringData = getShaContent(blobHash);
+      const stringData = getShaContent(blobHash).toString('utf8');
       const content = stringData.split('\0')[1];
       process.stdout.write(content);
     }
@@ -61,13 +60,10 @@ switch (command) {
     break;
   case Commands.LsTree:
     const sha = args[args.length - 1];
-    const treeObject = getShaContent(sha);
-    console.log(treeObject);
-    console.log('---------------------------')
+    const treeObjectBuffer = getShaContent(sha);
+    const treeObject = treeObjectBuffer.toString('binary');
     const output: string[] = [];
     const entries = treeObject.split(' ');
-    console.log(entries);
-    console.log('---------------------------')
     if (args[1] === "--name-only") {
       for (let i = 2; i < entries.length; i++) {
         const nullIndex = entries[i].indexOf('\0');
@@ -75,30 +71,26 @@ switch (command) {
         output.push(fileName);
       }
     }
-    // else {
-    //   for (let i = 1; i < entries.length; i++) {
-    //     const line = [];
-    //     const splitEntries = entries[i].split(' ');
-    //     if (splitEntries.length > 1) {
-    //       const mode = splitEntries[0].substring(splitEntries[0].length - 6);
-    //       let modeLength = 6;
-    //       if (mode.endsWith("40000")) {
-    //         line.push("40000");
-    //         line.push("tree");
-    //         modeLength = 5;
-    //       }
-    //       else {
-    //         line.push(mode);
-    //         line.push("blob");
-    //       }
-    //       const sha = getShaFromNext(entries, i);
-    //       const buf = Buffer.from(sha, 'latin1');
-    //       const hex = buf.toString('hex');
-    //       line.push(hex);
-    //       output.push(`${line.join(' ')}\t${splitEntries[splitEntries.length - 1]}`);
-    //     }
-    //   }
-    // }
+    else {
+      const ni = entries[1].indexOf('\0');
+      entries[1] = entries[1].substring(ni+1);
+
+      for (let i = 2; i < entries.length; i++) {
+        const line = [];
+        line.push(entries[i-1]);
+        if(entries[i-1] === Modes.Directory) {
+          line.push(Objects.Tree)
+        } else line.push(Objects.Blob)
+        const nullIndex = entries[i].indexOf('\0');
+        const fileName = entries[i].substring(0, nullIndex);
+        const sha = entries[i].substring(nullIndex+1, nullIndex+21);
+        entries[i] = entries[i].substring(nullIndex+21);
+        const buf = Buffer.from(sha, 'binary');
+        const hex = buf.toString('hex');
+        line.push(hex);
+        output.push(`${line.join(' ')}    ${fileName}`);
+      }
+    }
     const outputString = output.join('\n');
     console.log(outputString);
     break;
