@@ -1,6 +1,7 @@
 import * as fs from "fs";
 import zlib from 'node:zlib';
 import crypto from "crypto";
+import { Commands } from "./types";
 
 const args = process.argv.slice(2);
 const command = args[0];
@@ -26,13 +27,6 @@ const getShaFromNext = (entries: string[], i: number): string => {
             : nextEntry[0];
     }
     return sha;
-}
-
-enum Commands {
-    Init = "init",
-    CatFile = "cat-file",
-    HashObject = "hash-object",
-    LsTree = "ls-tree"
 }
 
 switch (command) {
