@@ -12,22 +12,6 @@ const getShaContent = (sha: string) => {
   return zlib.unzipSync(data);
 }
 
-const getShaFromNext = (entries: string[], i: number): string => {
-  const nextEntry = entries[i + 1].split(' ');
-  let sha;
-  if (nextEntry.length > 1) {
-    const mode = nextEntry[0].substring(nextEntry[0].length - 6);
-    if (mode.endsWith('40000')) sha = nextEntry[0].substring(0, nextEntry[0].length - 5);
-    else sha = nextEntry[0].substring(0, nextEntry[0].length - 6);
-  }
-  else {
-    sha = i + 2 < entries.length
-      ? nextEntry[0] + '\0' + getShaFromNext(entries, i + 1)
-      : nextEntry[0];
-  }
-  return sha;
-}
-
 switch (command) {
   case Commands.Init:
     fs.mkdirSync(".git", { recursive: true });
