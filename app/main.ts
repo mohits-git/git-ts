@@ -17,7 +17,8 @@ switch (command) {
   case Commands.HashObject:
     if (args[1] === "-w") {
       const fileName = args[2];
-      hashObject(`./${fileName}`);
+      const hash = hashObject(`./${fileName}`);
+      console.log(hash);
     }
     break;
   case Commands.LsTree:
@@ -25,7 +26,7 @@ switch (command) {
     const isNameOnly = args[1] === "--name-only";
     lsTree(sha, isNameOnly);
     break;
-  default:
+ default:
     throw new Error(`Unknown command ${command}`);
 }
 

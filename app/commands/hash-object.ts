@@ -11,6 +11,5 @@ export const hashObject = (filePath: string): string | undefined => {
   const blobObjectFile = hash.substring(2);
   fs.mkdirSync(`./.git/objects/${dirName}`, { recursive: true });
   fs.writeFileSync(`./.git/objects/${dirName}/${blobObjectFile}`, compressedContent);
-  console.log(hash);
   return hash;
 }
