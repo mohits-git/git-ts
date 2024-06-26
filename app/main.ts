@@ -1,5 +1,5 @@
 import { Commands } from "./types";
-import { catFile, hashObject, init, lsTree } from "./commands";
+import { catFile, hashObject, init, lsTree, writeTree } from "./commands";
 
 const args = process.argv.slice(2);
 const command = args[0];
@@ -26,7 +26,11 @@ switch (command) {
     const isNameOnly = args[1] === "--name-only";
     lsTree(sha, isNameOnly);
     break;
- default:
+  case Commands.WriteTree:
+    const hash = writeTree("./");
+    console.log(hash);
+    break;
+  default:
     throw new Error(`Unknown command ${command}`);
 }
 
