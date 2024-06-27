@@ -9,16 +9,23 @@ export const getShaContent = (sha: string) => {
 }
 
 export const getCommitTreeProps = (args: string[]): CommitTreeProps => {
-    const data: CommitTreeProps = {
-      treeSha: args[1],
-      parentCommit: null,
-      message: ""
-    };
-    if (args[2] === '-p') {
-      data.parentCommit = args[3];
-      data.message = args[5];
-    } else if (args[2] === '-m') {
-      data.message = args[3];
-    }
-    return data;
+  const data: CommitTreeProps = {
+    treeSha: args[1],
+    parentCommit: null,
+    message: ""
+  };
+  if (args[2] === '-p') {
+    data.parentCommit = args[3];
+    data.message = args[5];
+  } else if (args[2] === '-m') {
+    data.message = args[3];
+  }
+  return data;
+}
+
+export const getConfig = () => {
+  return {
+    author: "mohits-git",
+    mail: "mohitkhatri2805@gmail.com"
+  }
 }
