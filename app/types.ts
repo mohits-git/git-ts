@@ -3,7 +3,8 @@ export enum Commands {
   CatFile = "cat-file",
   HashObject = "hash-object",
   LsTree = "ls-tree",
-  WriteTree = "write-tree"
+  WriteTree = "write-tree",
+  CommitTree = "commit-tree"
 }
 
 export enum Modes {
@@ -17,4 +18,10 @@ export enum Objects {
   Blob = "blob",
   Tree = "tree",
   Commit = "commit"
+}
+
+export type CommitTreeProps = {
+  treeSha: string;
+  parentCommit: string | null;
+  message: string;
 }

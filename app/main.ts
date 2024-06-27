@@ -1,5 +1,12 @@
 import { Commands } from "./types";
-import { catFile, hashObject, init, lsTree, writeTree } from "./commands";
+import {
+  catFile,
+  hashObject,
+  init,
+  lsTree,
+  writeTree,
+} from "./commands";
+import { getCommitTreeProps } from "./helpers";
 
 const args = process.argv.slice(2);
 const command = args[0];
@@ -29,6 +36,9 @@ switch (command) {
   case Commands.WriteTree:
     const hash = writeTree("./");
     console.log(hash);
+    break;
+  case Commands.CommitTree:
+    const props = getCommitTreeProps(args);
     break;
   default:
     throw new Error(`Unknown command ${command}`);
