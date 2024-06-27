@@ -1,6 +1,7 @@
 import { Commands } from "./types";
 import {
   catFile,
+  commitTree,
   hashObject,
   init,
   lsTree,
@@ -39,8 +40,9 @@ switch (command) {
     break;
   case Commands.CommitTree:
     const props = getCommitTreeProps(args);
+    const commitHash = commitTree(props);
+    console.log(commitHash);
     break;
   default:
     throw new Error(`Unknown command ${command}`);
 }
-
